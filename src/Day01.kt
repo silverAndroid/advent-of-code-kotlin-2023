@@ -1,51 +1,17 @@
 fun main() {
     fun part1(input: List<String>): Int {
         return input.sumOf { line ->
-            val firstDigit = line.find { it.isDigit() }!!
-            val lastDigit = line.findLast { it.isDigit() }!!
-            String(charArrayOf(firstDigit, lastDigit)).toInt()
+            val firstDigit = calculateDigit(line, isLastDigit = false, includeLetters = false)
+            val lastDigit = calculateDigit(line, isLastDigit = true, includeLetters = false)
+
+            (firstDigit + lastDigit).toInt()
         }
     }
 
-    val numbersAsStrings =
-        listOf(
-            "zero",
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-        )
-
     fun part2(input: List<String>): Int {
         return input.sumOf { line ->
-            val (_, firstDigitStr) = line.findAnyOf(numbersAsStrings)!!
-            val firstDigit = if (firstDigitStr.length > 1) {
-                numbersAsStrings.indexOf(firstDigitStr).toString()
-            } else {
-                firstDigitStr
-            }
-
-            val (_, lastDigitStr) = line.findLastAnyOf(numbersAsStrings)!!
-            val lastDigit = if (lastDigitStr.length > 1) {
-                numbersAsStrings.indexOf(lastDigitStr).toString()
-            } else {
-                lastDigitStr
-            }
+            val firstDigit = calculateDigit(line, isLastDigit = false, includeLetters = true)
+            val lastDigit = calculateDigit(line, isLastDigit = true, includeLetters = true)
 
             (firstDigit + lastDigit).toInt()
         }
