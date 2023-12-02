@@ -1,15 +1,21 @@
 fun main() {
+    fun listOfCubes(game: String): List<Pair<String, Int>> {
+        return game.split(", ", "; ").map {
+            val cubeSplit = it.split(" ")
+            val number = cubeSplit.first().toInt()
+            val colour = cubeSplit.last()
+
+            colour to number
+        }
+    }
+
     fun part1(input: List<String>): Int {
         val maxes = mapOf("red" to 12, "green" to 13, "blue" to 14)
 
         return input.sumOf { line ->
             val gameSplit = line.split(": ")
 
-            val hasExceededMaxes = gameSplit.last().split(", ", "; ").any {
-                val cubeSplit = it.split(" ")
-                val number = cubeSplit.first().toInt()
-                val colour = cubeSplit.last()
-
+            val hasExceededMaxes = listOfCubes(gameSplit.last()).any { (colour, number) ->
                 number > maxes.getValue(colour)
             }
 
