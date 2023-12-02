@@ -1,3 +1,5 @@
+import kotlin.math.max
+
 fun main() {
     fun listOfCubes(game: String): List<Pair<String, Int>> {
         return game.split(", ", "; ").map {
@@ -29,7 +31,12 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        return input.sumOf { line ->
+            val game = line.split(": ").last()
+
+            listOfCubes(game).groupBy({ it.first }) { it.second }.mapValues { it.value.max() }
+                .values.fold(initial = 1) { acc, num -> acc * num }.toInt()
+        }
     }
 
     // test if implementation meets criteria from the description, like:
@@ -39,6 +46,12 @@ fun main() {
             part1(
                 partOneTestInput
             )
+        }"
+    }
+    val partTwoTestInput = readInput("Day02_part2_test")
+    check(part2(partTwoTestInput) == 2286) {
+        "Check failed; expected: 2286, actual: ${
+            part2(partTwoTestInput)
         }"
     }
 
