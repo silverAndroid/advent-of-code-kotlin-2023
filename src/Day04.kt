@@ -5,13 +5,17 @@ fun main() {
         return numbersList.split(Regex("\\s+")).map { it.toInt() }
     }
 
+    fun getWinningLotteryNumbers(line: String): List<Int> {
+        val card = line.split(Regex("\\s*[:|]\\s*")).drop(1)
+        val winningNumbers = getNumbers(card.first()).toSet()
+        val lotteryNumbers = getNumbers(card.last())
+
+        return lotteryNumbers.filter { winningNumbers.contains(it) }
+    }
+
     fun part1(input: List<String>): Int {
         return input.sumOf { line ->
-            val card = line.split(Regex("\\s*[:|]\\s*")).drop(1)
-            val winningNumbers = getNumbers(card.first()).toSet()
-            val lotteryNumbers = getNumbers(card.last())
-
-            val winningLotteryNumbers = lotteryNumbers.filter { winningNumbers.contains(it) }
+            val winningLotteryNumbers = getWinningLotteryNumbers(line)
             if (winningLotteryNumbers.isEmpty()) {
                 0
             } else {
@@ -21,7 +25,20 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        var cards = List(input.size - 1) { 1 }
+        val scores = mutableListOf(1)
+        var numCards = 1
+
+        input.forEach { line ->
+            val winningLotteryNumbers = getWinningLotteryNumbers(line)
+            cards = cards.take(winningLotteryNumbers.size).map { it + numCards }
+                .run { this + cards.drop(winningLotteryNumbers.size) }
+            numCards = cards.firstOrNull() ?: return@forEach
+            scores.add(numCards)
+            cards = cards.drop(1)
+        }
+
+        return scores.sum()
     }
 
     // test if implementation meets criteria from the description, like:
@@ -34,13 +51,13 @@ fun main() {
             )
         }"
     }
-//    val partTwoTestInput = readInput("Day04_part2_test")
-//    val partTwoExpected = 4361
-//    check(part2(partTwoTestInput) == partTwoExpected) {
-//        "Check failed; expected: $partTwoExpected, actual: ${
-//            part2(partTwoTestInput)
-//        }"
-//    }
+    val partTwoTestInput = readInput("Day04_part2_test")
+    val partTwoExpected = 30
+    check(part2(partTwoTestInput) == partTwoExpected) {
+        "Check failed; expected: $partTwoExpected, actual: ${
+            part2(partTwoTestInput)
+        }"
+    }
 
     val input = readInput("Day04")
     part1(input).println()
