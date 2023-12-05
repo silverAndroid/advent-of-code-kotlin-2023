@@ -1,11 +1,11 @@
-fun findAllSymbols(input: List<String>): List<Coordinate> {
-    val symbols = mutableListOf<Coordinate>()
+fun findAllSymbols(input: List<String>): List<SymbolCoordinate> {
+    val symbols = mutableListOf<SymbolCoordinate>()
 
     input.forEachIndexed RowIndex@{ row, line ->
         line.forEachIndexed ColumnIndex@{ column, c ->
             if (c.isDigit() || c == '.') return@ColumnIndex
 
-            symbols.add(Coordinate(row, column))
+            symbols.add(SymbolCoordinate(symbol = c, coordinate = Coordinate(row, column)))
         }
     }
 
@@ -42,4 +42,39 @@ fun buildNumber(
     return number
 }
 
+fun getAdjacentNumbers(
+    input: List<String>,
+    visited: MutableSet<Coordinate>,
+    coordinate: Coordinate,
+): List<Int> {
+    val surroundingCells = getSurroundingCells(coordinate)
+    val cellsWithDigits = surroundingCells.filter { (row, column) -> input[row][column].isDigit() }
+    return cellsWithDigits.mapNotNull {
+        if (visited.contains(it)) {
+            return@mapNotNull null
+        }
+
+        buildNumber(input, visited, coordinate = it)?.toInt()
+    }
+}
+
+fun getSurroundingCells(coordinate: Coordinate): List<Coordinate> {
+    val (row, column) = coordinate
+    return List(8) {
+        if (it < 3) {
+            Coordinate(row - 1, column = it + column - 1)
+        } else if (it in 5..7) {
+            Coordinate(row + 1, column = it % 3 + column - 1)
+        } else if (it == 3) {
+            Coordinate(row, column - 1)
+        } else if (it == 4) {
+            Coordinate(row, it % 3 + column)
+        } else {
+            throw Exception("Unknown coordinate $row $column $it")
+        }
+    }
+}
+
 data class Coordinate(val row: Int, val column: Int)
+
+data class SymbolCoordinate(val symbol: Char, val coordinate: Coordinate)

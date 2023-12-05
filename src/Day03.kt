@@ -4,23 +4,12 @@ fun main() {
         val maxColumn = input[0].length
 
         val symbols = findAllSymbols(input)
-        val visitedCells = mutableSetOf(*(symbols.toTypedArray()))
+        val visitedCells = mutableSetOf(*(symbols.map { it.coordinate }.toTypedArray()))
         val partNumbers = mutableListOf<Int>()
 
-        symbols.forEach { (row, column) ->
-            val cellsToVisit = List(8) {
-                if (it < 3) {
-                    Coordinate(row - 1, column = it + column - 1)
-                } else if (it in 5..7) {
-                    Coordinate(row + 1, column = it % 3 + column - 1)
-                } else if (it == 3) {
-                    Coordinate(row, column - 1)
-                } else if (it == 4) {
-                    Coordinate(row, it % 3 + column)
-                } else {
-                    throw Exception("Unknown coordinate $row $column $it")
-                }
-            }.filterNot { (row, column) -> row > maxRow || column > maxColumn }
+        symbols.forEach { (_, coordinate) ->
+            val cellsToVisit =
+                getSurroundingCells(coordinate).filterNot { (row, column) -> row > maxRow || column > maxColumn }
 
             cellsToVisit.forEach visitCells@{
                 if (visitedCells.contains(it)) {
@@ -36,7 +25,19 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val zero = 0
+
+        val symbols = findAllSymbols(input).filter { it.symbol == '*' }
+        val visited = mutableSetOf<Coordinate>()
+
+        return symbols.sumOf { (_, coordinate) ->
+            val adjacentNumbers = getAdjacentNumbers(input, visited, coordinate)
+            if (adjacentNumbers.size < 2) {
+                return@sumOf zero
+            }
+
+            adjacentNumbers.fold(1) { acc, num -> acc * num }
+        }
     }
 
     // test if implementation meets criteria from the description, like:
@@ -48,12 +49,12 @@ fun main() {
             )
         }"
     }
-//    val partTwoTestInput = readInput("Day03_part2_test")
-//    check(part2(partTwoTestInput) == 2286) {
-//        "Check failed; expected: 2286, actual: ${
-//            part2(partTwoTestInput)
-//        }"
-//    }
+    val partTwoTestInput = readInput("Day03_part2_test")
+    check(part2(partTwoTestInput) == 467835) {
+        "Check failed; expected: 467835, actual: ${
+            part2(partTwoTestInput)
+        }"
+    }
 
     val input = readInput("Day03")
     part1(input).println()
