@@ -29,8 +29,27 @@ fun main() {
         }.let {
             it.first() to it.last()
         }
-        val distances = (0..time).map { calculateDistance(it, time) }
-        return distances.count { distanceTravelled -> distanceTravelled > totalDistance }
+
+        val distancesToCount = mutableListOf<Long>()
+        var currentSpeed = 0L
+
+        var hasReachedMinimumDistance: Boolean
+        do {
+            hasReachedMinimumDistance = calculateDistance(currentSpeed++, time) > totalDistance
+            if (hasReachedMinimumDistance) {
+                currentSpeed -= 1
+            }
+        } while (!hasReachedMinimumDistance)
+
+        do {
+            val distance = calculateDistance(currentSpeed++, time)
+            hasReachedMinimumDistance = distance > totalDistance
+            if (hasReachedMinimumDistance) {
+                distancesToCount.add(distance)
+            }
+        } while (hasReachedMinimumDistance)
+
+        return distancesToCount.count()
     }
 
     // test if implementation meets criteria from the description, like:
