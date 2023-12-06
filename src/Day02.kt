@@ -1,5 +1,3 @@
-import kotlin.math.max
-
 fun main() {
     fun listOfCubes(game: String): List<Pair<String, Int>> {
         return game.split(", ", "; ").map {
@@ -35,7 +33,7 @@ fun main() {
             val game = line.split(": ").last()
 
             listOfCubes(game).groupBy({ it.first }) { it.second }.mapValues { it.value.max() }
-                .values.fold(initial = 1) { acc, num -> acc * num }.toInt()
+                .values.multiply()
         }
     }
 

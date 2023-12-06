@@ -36,7 +36,7 @@ fun main() {
                 return@sumOf zero
             }
 
-            adjacentNumbers.fold(1) { acc, num -> acc * num }
+            adjacentNumbers.multiply()
         }
     }
 
