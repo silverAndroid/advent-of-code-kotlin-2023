@@ -1,12 +1,15 @@
 fun main() {
-    fun calculateDistance(speed: Int, totalTime: Int): Int {
-        if (speed == 0 || speed == totalTime) {
+    fun calculateDistance(speed: Long, totalTime: Long): Long {
+        if (speed == 0L || speed == totalTime) {
             return 0
         }
 
         // speed is equal to time taken to hold down button so subtract speed from total time
         return (totalTime - speed) * speed
     }
+
+    fun calculateDistance(speed: Int, totalTime: Int) =
+        calculateDistance(speed.toLong(), totalTime.toLong()).toInt()
 
     fun part1(input: List<String>): Int {
         val racesList = input.map { line -> line.split(Regex("\\s+")).drop(1).map { it.toInt() } }
@@ -21,7 +24,13 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val (time, totalDistance) = input.map { line ->
+            line.split(Regex("\\s+")).drop(1).reduce { acc, string -> acc + string }.toLong()
+        }.let {
+            it.first() to it.last()
+        }
+        val distances = (0..time).map { calculateDistance(it, time) }
+        return distances.count { distanceTravelled -> distanceTravelled > totalDistance }
     }
 
     // test if implementation meets criteria from the description, like:
@@ -34,13 +43,13 @@ fun main() {
             )
         }"
     }
-//    val partTwoTestInput = readInput("Day06_part2_test")
-//    val partTwoExpected = 30
-//    check(part2(partTwoTestInput) == partTwoExpected) {
-//        "Check failed; expected: $partTwoExpected, actual: ${
-//            part2(partTwoTestInput)
-//        }"
-//    }
+    val partTwoTestInput = readInput("Day06_part2_test")
+    val partTwoExpected = 71503
+    check(part2(partTwoTestInput) == partTwoExpected) {
+        "Check failed; expected: $partTwoExpected, actual: ${
+            part2(partTwoTestInput)
+        }"
+    }
 
     val input = readInput("Day06")
     part1(input).println()
